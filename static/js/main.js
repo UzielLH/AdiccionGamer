@@ -1,31 +1,233 @@
 /* ═══════════════════════════════════════════════════════════
-   🧠 IA Predictora — Riesgo de Adicción Gamer (Frontend JS)
+   IA Predictora — Riesgo de Adicción Gamer (Frontend JS v2)
+   Enhanced UX: toasts, scroll animations, range sync, etc.
    ═══════════════════════════════════════════════════════════ */
 
 // ── Estado global ────────────────────────────────────────
 let modeloCargado = false;
 
-// ── Partículas de fondo ──────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// PARTÍCULAS DE FONDO
+// ══════════════════════════════════════════════════════════
 (function crearParticulas() {
   const container = document.getElementById("particles");
   if (!container) return;
   const colores = ["#6c5ce7", "#00cec9", "#a29bfe", "#00b894", "#fd79a8"];
-  for (let i = 0; i < 35; i++) {
+  for (let i = 0; i < 30; i++) {
     const p = document.createElement("div");
     p.classList.add("particle");
-    const size = Math.random() * 6 + 2;
+    const size = Math.random() * 5 + 2;
     p.style.width = size + "px";
     p.style.height = size + "px";
     p.style.left = Math.random() * 100 + "%";
     p.style.background = colores[Math.floor(Math.random() * colores.length)];
-    p.style.animationDuration = Math.random() * 20 + 15 + "s";
+    p.style.animationDuration = Math.random() * 25 + 15 + "s";
     p.style.animationDelay = Math.random() * 15 + "s";
     container.appendChild(p);
   }
 })();
 
 // ══════════════════════════════════════════════════════════
-// VERIFICAR ESTADO DEL MODELO AL CARGAR
+// TOAST NOTIFICATION SYSTEM
+// ══════════════════════════════════════════════════════════
+function showToast(message, type = "info", duration = 3800) {
+  const container = document.getElementById("toastContainer");
+  if (!container) return;
+
+  const icons = { success: "✅", error: "❌", warning: "⚠️", info: "💡" };
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type] || icons.info}</span><span>${message}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, duration);
+}
+
+// ══════════════════════════════════════════════════════════
+// SCROLL REVEAL (Intersection Observer)
+// ══════════════════════════════════════════════════════════
+(function initReveal() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+  );
+
+  document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+})();
+
+// ══════════════════════════════════════════════════════════
+// HEADER SCROLL EFFECT + ACTIVE NAV
+// ══════════════════════════════════════════════════════════
+(function initHeader() {
+  const header = document.getElementById("header");
+  const backToTop = document.getElementById("backToTop");
+  const navLinks = document.querySelectorAll(".nav-link");
+  const sections = ["heroSection", "uploadSection", "mainContent", "aboutSection"];
+
+  window.addEventListener("scroll", () => {
+    const scrollY = window.scrollY;
+
+    // Sticky header shadow
+    if (scrollY > 50) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+
+    // Back to top button
+    if (scrollY > 400) {
+      backToTop.classList.add("visible");
+    } else {
+      backToTop.classList.remove("visible");
+    }
+
+    // Active nav link
+    let currentSection = sections[0];
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop - 120 <= scrollY) {
+        currentSection = id;
+      }
+    }
+    navLinks.forEach((link) => {
+      link.classList.toggle("active", link.dataset.section === currentSection);
+    });
+  });
+
+  // Back to top click
+  if (backToTop) {
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+})();
+
+// ══════════════════════════════════════════════════════════
+// HERO STATS COUNTER ANIMATION
+// ══════════════════════════════════════════════════════════
+(function initCounters() {
+  const counters = document.querySelectorAll(".stat-num[data-count]");
+  if (!counters.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.dataset.count, 10);
+          animateCounter(el, target);
+          observer.unobserve(el);
+        }
+      });
+    },
+    { threshold: 0.5 }
+  );
+
+  counters.forEach((c) => observer.observe(c));
+
+  function animateCounter(el, target) {
+    const duration = 1500;
+    const start = performance.now();
+    const format = target >= 1000;
+
+    function step(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(eased * target);
+
+      if (format && current >= 1000) {
+        el.textContent = Math.round(current / 1000) + "K+";
+      } else {
+        el.textContent = current;
+      }
+
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+})();
+
+// ══════════════════════════════════════════════════════════
+// RANGE SLIDER ↔ NUMBER INPUT SYNC
+// ══════════════════════════════════════════════════════════
+(function initRangeSync() {
+  document.querySelectorAll(".range-slider").forEach((slider) => {
+    const targetId = slider.dataset.sync;
+    const numInput = document.getElementById(targetId);
+    if (!numInput) return;
+
+    slider.addEventListener("input", () => {
+      numInput.value = slider.value;
+    });
+
+    numInput.addEventListener("input", () => {
+      slider.value = numInput.value;
+    });
+  });
+})();
+
+// ══════════════════════════════════════════════════════════
+// FORM PROGRESS STEPS
+// ══════════════════════════════════════════════════════════
+function irASeccion(stepNum) {
+  const target = document.querySelector(`.form-step[data-step="${stepNum}"]`);
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  actualizarProgreso(stepNum);
+}
+
+function actualizarProgreso(activeStep) {
+  const steps = document.querySelectorAll(".progress-steps .step");
+  const fill = document.getElementById("progressFill");
+  const totalSteps = steps.length;
+
+  steps.forEach((step) => {
+    const num = parseInt(step.dataset.step, 10);
+    step.classList.remove("active", "completed");
+    if (num < activeStep) {
+      step.classList.add("completed");
+    } else if (num === activeStep) {
+      step.classList.add("active");
+    }
+  });
+
+  if (fill) {
+    fill.style.width = ((activeStep / totalSteps) * 100) + "%";
+  }
+}
+
+// Track scroll position to update progress
+(function initProgressTracking() {
+  const formSteps = document.querySelectorAll(".form-step");
+  if (!formSteps.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const step = parseInt(entry.target.dataset.step, 10);
+          actualizarProgreso(step);
+        }
+      });
+    },
+    { threshold: 0.4, rootMargin: "-10% 0px -40% 0px" }
+  );
+
+  formSteps.forEach((el) => observer.observe(el));
+})();
+
+// ══════════════════════════════════════════════════════════
+// VERIFICAR ESTADO DEL MODELO
 // ══════════════════════════════════════════════════════════
 (async function verificarEstado() {
   try {
@@ -52,7 +254,7 @@ function actualizarBadge(cargado, nombre, scalerOk) {
     uploadCard.classList.add("modelo-activo");
   } else {
     dot.className = "badge-dot inactive";
-    texto.textContent = "Sin modelo — sube uno para comenzar";
+    texto.textContent = "Sin modelo — sube uno";
     uploadCard.classList.remove("modelo-activo");
   }
 }
@@ -67,31 +269,28 @@ const inputConfig = document.getElementById("archivoConfig");
 const dropzoneModelo = document.getElementById("dropzoneModelo");
 const dropzoneConfig = document.getElementById("dropzoneConfig");
 
-// Mostrar nombre de archivo seleccionado
+// File selection feedback
 inputModelo.addEventListener("change", () => {
-  const name = inputModelo.files[0]?.name || "Ningún archivo seleccionado";
+  const name = inputModelo.files[0]?.name || "Sin archivo";
   document.getElementById("nombreModelo").textContent = name;
   dropzoneModelo.classList.toggle("has-file", inputModelo.files.length > 0);
   btnUpload.disabled = inputModelo.files.length === 0;
 });
 
 inputConfig.addEventListener("change", () => {
-  const name = inputConfig.files[0]?.name || "Ningún archivo seleccionado";
+  const name = inputConfig.files[0]?.name || "Sin archivo";
   document.getElementById("nombreConfig").textContent = name;
   dropzoneConfig.classList.toggle("has-file", inputConfig.files.length > 0);
 });
 
-// Drag & drop visual feedback
+// Drag & drop visual
 [dropzoneModelo, dropzoneConfig].forEach((dz) => {
-  dz.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dz.classList.add("dragover");
-  });
+  dz.addEventListener("dragover", (e) => { e.preventDefault(); dz.classList.add("dragover"); });
   dz.addEventListener("dragleave", () => dz.classList.remove("dragover"));
   dz.addEventListener("drop", () => dz.classList.remove("dragover"));
 });
 
-// Enviar modelo
+// Submit model upload
 formUpload.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!inputModelo.files[0]) return;
@@ -117,17 +316,19 @@ formUpload.addEventListener("submit", async (e) => {
       document.getElementById("uploadResultIcon").textContent = "✅";
       document.getElementById("uploadResultText").textContent = data.message;
       actualizarBadge(true, data.modelo_nombre, data.scaler_cargado);
+      showToast("Modelo cargado correctamente", "success");
     } else {
       resultDiv.classList.add("error");
       document.getElementById("uploadResultIcon").textContent = "❌";
       document.getElementById("uploadResultText").textContent = data.error;
+      showToast(data.error, "error");
     }
   } catch (err) {
-    const resultDiv = document.getElementById("uploadResult");
     resultDiv.classList.remove("hidden", "success", "error");
     resultDiv.classList.add("error");
     document.getElementById("uploadResultIcon").textContent = "❌";
     document.getElementById("uploadResultText").textContent = "Error de conexión: " + err.message;
+    showToast("Error de conexión", "error");
   } finally {
     btnUpload.classList.remove("loading");
   }
@@ -143,14 +344,13 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   if (!modeloCargado) {
-    alert("⚠️ No hay modelo cargado.\nPor favor sube un archivo .keras primero.");
+    showToast("No hay modelo cargado. Sube un archivo .keras primero.", "warning");
     document.getElementById("uploadSection").scrollIntoView({ behavior: "smooth" });
     return;
   }
 
   btn.classList.add("loading");
 
-  // Recopilar datos del formulario
   const formData = new FormData(form);
   const datos = {};
   for (const [key, value] of formData.entries()) {
@@ -167,13 +367,14 @@ form.addEventListener("submit", async (e) => {
     const json = await res.json();
 
     if (!json.ok) {
-      alert("Error: " + (json.error || "Respuesta inesperada del servidor."));
+      showToast(json.error || "Respuesta inesperada del servidor.", "error");
       return;
     }
 
     mostrarResultados(json);
+    showToast("Análisis completado", "success");
   } catch (err) {
-    alert("No se pudo conectar con el servidor.\n" + err.message);
+    showToast("No se pudo conectar con el servidor.", "error");
   } finally {
     btn.classList.remove("loading");
   }
@@ -189,16 +390,27 @@ async function cargarPreset(nombre) {
     const datos = json.datos;
     for (const [key, value] of Object.entries(datos)) {
       const el = document.getElementById(key);
-      if (el) el.value = value;
+      if (el) {
+        el.value = value;
+        // Also sync range sliders
+        const range = document.querySelector(`.range-slider[data-sync="${key}"]`);
+        if (range) range.value = value;
+      }
     }
 
-    // Efecto visual: flash en las tarjetas
+    // Visual flash on cards
     document.querySelectorAll(".card").forEach((card) => {
-      card.style.borderColor = "rgba(108, 92, 231, 0.5)";
-      setTimeout(() => (card.style.borderColor = ""), 600);
+      card.style.borderColor = "rgba(108, 92, 231, 0.4)";
+      card.style.boxShadow = "0 0 20px rgba(108, 92, 231, 0.1)";
+      setTimeout(() => {
+        card.style.borderColor = "";
+        card.style.boxShadow = "";
+      }, 700);
     });
+
+    showToast(`Perfil "${nombre}" cargado`, "info");
   } catch (err) {
-    console.error("Error cargando preset:", err);
+    showToast("Error cargando preset", "error");
   }
 }
 
@@ -209,28 +421,25 @@ function mostrarResultados(data) {
   const container = document.getElementById("resultados");
   container.classList.remove("hidden");
 
-  // Scroll suave hacia los resultados
   setTimeout(() => container.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
 
-  // ── Scores ──
   const addScore = data.addiction_score;
   const hapScore = data.happiness_score;
 
   animarNumero("addictionScore", addScore, "/10");
   animarNumero("happinessScore", hapScore, "/10");
 
-  // ── Barras ──
   setTimeout(() => {
     document.getElementById("addictionBar").style.width = (addScore / 10) * 100 + "%";
     document.getElementById("happinessBar").style.width = (hapScore / 10) * 100 + "%";
   }, 200);
 
-  // ── Categoría adicción ──
+  // Categoría adicción
   const catAdd = document.getElementById("addictionCategory");
   catAdd.textContent = data.riesgo.emoji + " " + data.riesgo.nivel;
   catAdd.style.color = data.riesgo.color;
 
-  // ── Categoría bienestar ──
+  // Categoría bienestar
   const catHap = document.getElementById("happinessCategory");
   if (data.bienestar) {
     catHap.textContent = data.bienestar.emoji + " " + data.bienestar.nivel;
@@ -251,17 +460,17 @@ function mostrarResultados(data) {
     }
   }
 
-  // ── Glow en tarjetas ──
+  // Glow cards
   const cardAdd = document.getElementById("cardAddiction");
   const cardHap = document.getElementById("cardHappiness");
   cardAdd.className = "result-card result-addiction " + glowClass(addScore, true);
   cardHap.className = "result-card result-happiness " + glowClass(hapScore, false);
 
-  // ── Gauges ──
+  // Gauges
   dibujarGauge("gaugeAddiction", addScore, true);
   dibujarGauge("gaugeHappiness", hapScore, false);
 
-  // ── Recomendaciones ──
+  // Recomendaciones
   const lista = document.getElementById("listaRecomendaciones");
   lista.innerHTML = "";
   data.recomendaciones.forEach((rec, i) => {
@@ -319,15 +528,15 @@ function dibujarGauge(canvasId, valor, isAddiction) {
 
   ctx.clearRect(0, 0, W, H);
 
-  // Fondo del arco
+  // Background arc
   ctx.beginPath();
   ctx.arc(cx, cy, radius, Math.PI, 0, false);
-  ctx.strokeStyle = "rgba(255,255,255,0.06)";
+  ctx.strokeStyle = "rgba(255,255,255,0.05)";
   ctx.lineWidth = lineWidth;
   ctx.lineCap = "round";
   ctx.stroke();
 
-  // Degradado del arco
+  // Gradient arc
   const pct = Math.min(Math.max(valor / 10, 0), 1);
   const endAngle = Math.PI + pct * Math.PI;
 
@@ -353,7 +562,7 @@ function dibujarGauge(canvasId, valor, isAddiction) {
   ctx.lineCap = "round";
   ctx.stroke();
 
-  // Aguja
+  // Needle
   const needleAngle = Math.PI + pct * Math.PI;
   const needleLen = radius - 25;
   const nx = cx + Math.cos(needleAngle) * needleLen;
@@ -367,14 +576,14 @@ function dibujarGauge(canvasId, valor, isAddiction) {
   ctx.lineCap = "round";
   ctx.stroke();
 
-  // Círculo central
+  // Center dot
   ctx.beginPath();
   ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
   ctx.fillStyle = "#fff";
   ctx.fill();
 
-  // Texto del valor
-  ctx.fillStyle = "#e8e8f0";
+  // Value text
+  ctx.fillStyle = "#eaeaf5";
   ctx.font = "bold 22px 'JetBrains Mono', monospace";
   ctx.textAlign = "center";
   ctx.fillText(valor.toFixed(1), cx, cy - 22);

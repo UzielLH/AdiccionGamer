@@ -3,26 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🧠 IA Predictora — Riesgo de Adicción Gamer</title>
+  <title>IA Predictora — Riesgo de Adicción Gamer</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
 
   <!-- ═══════════════ FONDO ANIMADO ═══════════════ -->
+  <div class="bg-mesh" id="bgMesh"></div>
   <div class="bg-particles" id="particles"></div>
 
-  <!-- ═══════════════ HEADER ═══════════════ -->
-  <header class="header">
+  <!-- ═══════════════ HEADER / NAV ═══════════════ -->
+  <header class="header" id="header">
     <div class="header-content">
       <div class="logo">
-        <span class="logo-icon">🧠</span>
+        <div class="logo-icon-wrap">
+          <span class="logo-icon">🧠</span>
+        </div>
         <div>
-          <h1>IA Predictora de Riesgo</h1>
-          <p class="subtitle">Adicción Gamer &amp; Bienestar Mental</p>
+          <h1>IA Predictora</h1>
+          <p class="subtitle">Adicción Gamer &amp; Bienestar</p>
         </div>
       </div>
+      <nav class="nav" id="mainNav">
+        <a href="#heroSection" class="nav-link active" data-section="heroSection">Inicio</a>
+        <a href="#uploadSection" class="nav-link" data-section="uploadSection">Modelo</a>
+        <a href="#mainContent" class="nav-link" data-section="mainContent">Formulario</a>
+        <a href="#aboutSection" class="nav-link" data-section="aboutSection">Acerca de</a>
+      </nav>
       <div class="header-badge" id="modeloBadge">
         <span class="badge-dot" id="badgeDot"></span>
         <span id="badgeTexto">Verificando modelo…</span>
@@ -31,30 +40,49 @@
   </header>
 
   <!-- ═══════════════ HERO ═══════════════ -->
-  <section class="hero">
-    <div class="hero-inner">
-      <h2>Analiza tus hábitos de gaming</h2>
+  <section class="hero" id="heroSection">
+    <div class="hero-inner reveal">
+      <div class="hero-chip">Inteligencia Artificial Aplicada</div>
+      <h2>Analiza tus <span class="gradient-text">hábitos de gaming</span></h2>
       <p>
-        Nuestro modelo de inteligencia artificial evalúa <strong>37 variables</strong>
-        de comportamiento, salud y estilo de vida para estimar tu nivel de 
-        <em>riesgo de adicción</em> y tu <em>bienestar mental</em> de manera preventiva.
+        Nuestro modelo de IA evalúa <strong>37 variables</strong> de comportamiento,
+        salud y estilo de vida para estimar tu nivel de <em>riesgo de adicción</em>
+        y tu <em>bienestar mental</em> de manera preventiva.
       </p>
       <div class="hero-stats">
-        <div class="stat"><span class="stat-num">200K+</span><span class="stat-label">Perfiles analizados</span></div>
-        <div class="stat"><span class="stat-num">37</span><span class="stat-label">Variables de entrada</span></div>
-        <div class="stat"><span class="stat-num">2</span><span class="stat-label">Predicciones simultáneas</span></div>
+        <div class="stat">
+          <span class="stat-num" data-count="200000">0</span>
+          <span class="stat-label">Perfiles analizados</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="37">0</span>
+          <span class="stat-label">Variables de entrada</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" data-count="2">0</span>
+          <span class="stat-label">Predicciones simultáneas</span>
+        </div>
       </div>
+      <a href="#mainContent" class="hero-cta">
+        <span>Comenzar Análisis</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+      </a>
     </div>
   </section>
 
   <!-- ═══════════════ CARGAR MODELO ═══════════════ -->
   <section class="upload-section" id="uploadSection">
-    <div class="upload-card" id="uploadCard">
+    <div class="upload-card reveal" id="uploadCard">
       <div class="upload-header">
-        <span class="upload-icon">📦</span>
+        <div class="upload-icon-wrap">
+          <span class="upload-icon">📦</span>
+        </div>
         <div>
           <h3>Cargar Modelo de IA</h3>
-          <p class="upload-desc">Sube tu modelo entrenado <strong>.keras</strong> y opcionalmente el archivo de configuración <strong>.pkl</strong> (contiene el scaler para normalización).</p>
+          <p class="upload-desc">
+            Sube tu modelo entrenado <strong>.keras</strong> y opcionalmente el archivo
+            de configuración <strong>.pkl</strong> (contiene el scaler para normalización).
+          </p>
         </div>
       </div>
 
@@ -66,8 +94,8 @@
             <div class="dropzone-content">
               <span class="dropzone-icon">🤖</span>
               <p class="dropzone-title">Modelo (.keras)</p>
-              <p class="dropzone-hint">Arrastra aquí o haz clic para seleccionar</p>
-              <p class="dropzone-filename" id="nombreModelo">Ningún archivo seleccionado</p>
+              <p class="dropzone-hint">Arrastra aquí o haz clic</p>
+              <p class="dropzone-filename" id="nombreModelo">Sin archivo</p>
             </div>
           </div>
           <!-- Config .pkl -->
@@ -76,8 +104,8 @@
             <div class="dropzone-content">
               <span class="dropzone-icon">⚙️</span>
               <p class="dropzone-title">Configuración (.pkl)</p>
-              <p class="dropzone-hint">Opcional — contiene el scaler</p>
-              <p class="dropzone-filename" id="nombreConfig">Ningún archivo seleccionado</p>
+              <p class="dropzone-hint">Opcional — scaler</p>
+              <p class="dropzone-filename" id="nombreConfig">Sin archivo</p>
             </div>
           </div>
         </div>
@@ -97,25 +125,72 @@
     </div>
   </section>
 
-  <!-- ═══════════════ PRESETS ═══════════════ -->
-  <section class="presets-section" id="presetsSection">
-    <p class="presets-label">Cargar perfil de ejemplo:</p>
-    <div class="presets-buttons">
-      <button class="preset-btn preset-casual"  onclick="cargarPreset('casual')">🎮 Casual</button>
-      <button class="preset-btn preset-moderado" onclick="cargarPreset('moderado')">⚡ Moderado</button>
-      <button class="preset-btn preset-hardcore" onclick="cargarPreset('hardcore')">🔥 Hardcore</button>
-    </div>
-  </section>
-
   <!-- ═══════════════ FORMULARIO ═══════════════ -->
   <main class="main-content" id="mainContent">
+
+    <!-- Presets -->
+    <div class="presets-section reveal">
+      <p class="presets-label">Cargar perfil de ejemplo:</p>
+      <div class="presets-buttons">
+        <button class="preset-btn preset-casual" onclick="cargarPreset('casual')">
+          <span class="preset-icon">🎮</span>
+          <span class="preset-name">Casual</span>
+          <span class="preset-desc">Bajo riesgo</span>
+        </button>
+        <button class="preset-btn preset-moderado" onclick="cargarPreset('moderado')">
+          <span class="preset-icon">⚡</span>
+          <span class="preset-name">Moderado</span>
+          <span class="preset-desc">Riesgo medio</span>
+        </button>
+        <button class="preset-btn preset-hardcore" onclick="cargarPreset('hardcore')">
+          <span class="preset-icon">🔥</span>
+          <span class="preset-name">Hardcore</span>
+          <span class="preset-desc">Riesgo alto</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="form-progress reveal">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 20%"></div>
+      </div>
+      <div class="progress-steps">
+        <button class="step active" data-step="1" onclick="irASeccion(1)">
+          <span class="step-num">1</span>
+          <span class="step-label">Juego</span>
+        </button>
+        <button class="step" data-step="2" onclick="irASeccion(2)">
+          <span class="step-num">2</span>
+          <span class="step-label">Salud</span>
+        </button>
+        <button class="step" data-step="3" onclick="irASeccion(3)">
+          <span class="step-num">3</span>
+          <span class="step-label">Social</span>
+        </button>
+        <button class="step" data-step="4" onclick="irASeccion(4)">
+          <span class="step-num">4</span>
+          <span class="step-label">Mental</span>
+        </button>
+        <button class="step" data-step="5" onclick="irASeccion(5)">
+          <span class="step-num">5</span>
+          <span class="step-label">Personal</span>
+        </button>
+      </div>
+    </div>
+
     <form id="formPrediccion" autocomplete="off">
 
-      <!-- ── Hábitos de Juego ── -->
-      <div class="card" data-section="juego">
+      <!-- ── STEP 1: Hábitos de Juego ── -->
+      <div class="card form-step reveal" data-section="juego" data-step="1">
         <div class="card-header">
-          <span class="card-icon">🎮</span>
-          <h3>Hábitos de Juego</h3>
+          <div class="card-icon-wrap juego">
+            <span class="card-icon">🎮</span>
+          </div>
+          <div>
+            <h3>Hábitos de Juego</h3>
+            <p class="card-subtitle">¿Cuánto y cómo juegas?</p>
+          </div>
         </div>
         <div class="card-grid">
           <div class="field">
@@ -133,39 +208,53 @@
             <input type="number" id="years_gaming" name="years_gaming" value="5" min="0" max="25" step="1" required />
             <span class="hint">0 – 25</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="night_gaming_ratio">Ratio juego nocturno</label>
-            <input type="number" id="night_gaming_ratio" name="night_gaming_ratio" value="0.3" min="0" max="1" step="0.05" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="1" step="0.05" value="0.3" data-sync="night_gaming_ratio" />
+              <input type="number" id="night_gaming_ratio" name="night_gaming_ratio" value="0.3" min="0" max="1" step="0.05" required />
+            </div>
             <span class="hint">0.0 – 1.0</span>
           </div>
           <div class="field">
-            <label for="weekend_gaming_hours">Horas de juego (fin de semana)</label>
+            <label for="weekend_gaming_hours">Horas fin de semana</label>
             <input type="number" id="weekend_gaming_hours" name="weekend_gaming_hours" value="5" min="0" max="36" step="0.5" required />
             <span class="hint">0 – 36 hrs</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="multiplayer_ratio">Ratio multijugador</label>
-            <input type="number" id="multiplayer_ratio" name="multiplayer_ratio" value="0.5" min="0" max="1" step="0.05" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="1" step="0.05" value="0.5" data-sync="multiplayer_ratio" />
+              <input type="number" id="multiplayer_ratio" name="multiplayer_ratio" value="0.5" min="0" max="1" step="0.05" required />
+            </div>
             <span class="hint">0.0 – 1.0</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="violent_games_ratio">Ratio juegos violentos</label>
-            <input type="number" id="violent_games_ratio" name="violent_games_ratio" value="0.4" min="0" max="1" step="0.05" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="1" step="0.05" value="0.4" data-sync="violent_games_ratio" />
+              <input type="number" id="violent_games_ratio" name="violent_games_ratio" value="0.4" min="0" max="1" step="0.05" required />
+            </div>
             <span class="hint">0.0 – 1.0</span>
           </div>
           <div class="field">
-            <label for="microtransactions_spending">Gasto en microtransacciones ($)</label>
+            <label for="microtransactions_spending">Gasto microtransacciones ($)</label>
             <input type="number" id="microtransactions_spending" name="microtransactions_spending" value="300" min="0" max="4000" step="10" required />
             <span class="hint">0 – 4,000 USD</span>
           </div>
         </div>
       </div>
 
-      <!-- ── Sueño y Salud Física ── -->
-      <div class="card" data-section="salud">
+      <!-- ── STEP 2: Sueño y Salud Física ── -->
+      <div class="card form-step reveal" data-section="salud" data-step="2">
         <div class="card-header">
-          <span class="card-icon">😴</span>
-          <h3>Sueño y Salud Física</h3>
+          <div class="card-icon-wrap salud">
+            <span class="card-icon">😴</span>
+          </div>
+          <div>
+            <h3>Sueño y Salud Física</h3>
+            <p class="card-subtitle">¿Cómo cuidas tu cuerpo?</p>
+          </div>
         </div>
         <div class="card-grid">
           <div class="field">
@@ -174,7 +263,7 @@
             <span class="hint">2 – 12 hrs</span>
           </div>
           <div class="field">
-            <label for="exercise_hours">Horas de ejercicio / semana</label>
+            <label for="exercise_hours">Ejercicio / semana (hrs)</label>
             <input type="number" id="exercise_hours" name="exercise_hours" value="2" min="0" max="16" step="0.5" required />
             <span class="hint">0 – 16 hrs</span>
           </div>
@@ -184,38 +273,52 @@
             <span class="hint">0 – 12</span>
           </div>
           <div class="field">
-            <label for="bmi">IMC (Índice de Masa Corporal)</label>
+            <label for="bmi">IMC</label>
             <input type="number" id="bmi" name="bmi" value="24" min="11" max="37" step="0.5" required />
             <span class="hint">11 – 37</span>
           </div>
           <div class="field">
-            <label for="screen_time_total">Tiempo total de pantalla (hrs)</label>
+            <label for="screen_time_total">Pantalla total (hrs)</label>
             <input type="number" id="screen_time_total" name="screen_time_total" value="7" min="0" max="33" step="0.5" required />
             <span class="hint">0 – 33 hrs</span>
           </div>
         </div>
       </div>
 
-      <!-- ── Interacción Social ── -->
-      <div class="card" data-section="social">
+      <!-- ── STEP 3: Interacción Social ── -->
+      <div class="card form-step reveal" data-section="social" data-step="3">
         <div class="card-header">
-          <span class="card-icon">👥</span>
-          <h3>Interacción Social</h3>
+          <div class="card-icon-wrap social">
+            <span class="card-icon">👥</span>
+          </div>
+          <div>
+            <h3>Interacción Social</h3>
+            <p class="card-subtitle">¿Cómo son tus relaciones?</p>
+          </div>
         </div>
         <div class="card-grid">
-          <div class="field">
+          <div class="field has-range">
             <label for="social_interaction_score">Interacción social</label>
-            <input type="number" id="social_interaction_score" name="social_interaction_score" value="5" min="0" max="10" step="0.5" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="10" step="0.5" value="5" data-sync="social_interaction_score" />
+              <input type="number" id="social_interaction_score" name="social_interaction_score" value="5" min="0" max="10" step="0.5" required />
+            </div>
             <span class="hint">0 – 10</span>
           </div>
-          <div class="field">
-            <label for="relationship_satisfaction">Satisfacción en relaciones</label>
-            <input type="number" id="relationship_satisfaction" name="relationship_satisfaction" value="6" min="0" max="10" step="0.5" required />
+          <div class="field has-range">
+            <label for="relationship_satisfaction">Satisfacción relaciones</label>
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="10" step="0.5" value="6" data-sync="relationship_satisfaction" />
+              <input type="number" id="relationship_satisfaction" name="relationship_satisfaction" value="6" min="0" max="10" step="0.5" required />
+            </div>
             <span class="hint">0 – 10</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="loneliness_score">Nivel de soledad</label>
-            <input type="number" id="loneliness_score" name="loneliness_score" value="4" min="0" max="10" step="0.5" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="10" step="0.5" value="4" data-sync="loneliness_score" />
+              <input type="number" id="loneliness_score" name="loneliness_score" value="4" min="0" max="10" step="0.5" required />
+            </div>
             <span class="hint">0 – 10</span>
           </div>
           <div class="field">
@@ -231,41 +334,63 @@
         </div>
       </div>
 
-      <!-- ── Salud Mental ── -->
-      <div class="card" data-section="mental">
+      <!-- ── STEP 4: Salud Mental ── -->
+      <div class="card form-step reveal" data-section="mental" data-step="4">
         <div class="card-header">
-          <span class="card-icon">🧠</span>
-          <h3>Salud Mental</h3>
+          <div class="card-icon-wrap mental">
+            <span class="card-icon">🧠</span>
+          </div>
+          <div>
+            <h3>Salud Mental</h3>
+            <p class="card-subtitle">¿Cómo te sientes emocionalmente?</p>
+          </div>
         </div>
         <div class="card-grid">
-          <div class="field">
+          <div class="field has-range">
             <label for="stress_level">Nivel de estrés</label>
-            <input type="number" id="stress_level" name="stress_level" value="5" min="1" max="10" step="1" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="1" max="10" step="1" value="5" data-sync="stress_level" />
+              <input type="number" id="stress_level" name="stress_level" value="5" min="1" max="10" step="1" required />
+            </div>
             <span class="hint">1 – 10</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="anxiety_score">Ansiedad</label>
-            <input type="number" id="anxiety_score" name="anxiety_score" value="4" min="0" max="10" step="0.5" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="10" step="0.5" value="4" data-sync="anxiety_score" />
+              <input type="number" id="anxiety_score" name="anxiety_score" value="4" min="0" max="10" step="0.5" required />
+            </div>
             <span class="hint">0 – 10</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="depression_score">Depresión</label>
-            <input type="number" id="depression_score" name="depression_score" value="3" min="0" max="10" step="0.5" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="10" step="0.5" value="3" data-sync="depression_score" />
+              <input type="number" id="depression_score" name="depression_score" value="3" min="0" max="10" step="0.5" required />
+            </div>
             <span class="hint">0 – 10</span>
           </div>
-          <div class="field">
+          <div class="field has-range">
             <label for="aggression_score">Agresividad</label>
-            <input type="number" id="aggression_score" name="aggression_score" value="3" min="0" max="10" step="0.5" required />
+            <div class="range-group">
+              <input type="range" class="range-slider" min="0" max="10" step="0.5" value="3" data-sync="aggression_score" />
+              <input type="number" id="aggression_score" name="aggression_score" value="3" min="0" max="10" step="0.5" required />
+            </div>
             <span class="hint">0 – 10</span>
           </div>
         </div>
       </div>
 
-      <!-- ── Datos Personales ── -->
-      <div class="card" data-section="personal">
+      <!-- ── STEP 5: Datos Personales ── -->
+      <div class="card form-step reveal" data-section="personal" data-step="5">
         <div class="card-header">
-          <span class="card-icon">👤</span>
-          <h3>Datos Personales</h3>
+          <div class="card-icon-wrap personal">
+            <span class="card-icon">👤</span>
+          </div>
+          <div>
+            <h3>Datos Personales</h3>
+            <p class="card-subtitle">Información demográfica básica</p>
+          </div>
         </div>
         <div class="card-grid">
           <div class="field">
@@ -344,28 +469,28 @@
 
   <!-- ═══════════════ ACERCA DEL PROYECTO ═══════════════ -->
   <section class="about-section" id="aboutSection">
-    <div class="about-card">
+    <div class="about-card reveal">
       <h2 class="about-title">🔬 Acerca del Proyecto</h2>
       <div class="about-grid">
         <div class="about-item">
           <span class="about-icon">🎯</span>
           <h4>Objetivo</h4>
-          <p>Diseñar una red neuronal que prediga el <strong>riesgo de adicción</strong> y el <strong>bienestar mental</strong> a partir de datos conductuales y de estilo de vida.</p>
+          <p>Diseñar una red neuronal que prediga el <strong>riesgo de adicción</strong> y el <strong>bienestar mental</strong> a partir de datos conductuales.</p>
         </div>
         <div class="about-item">
           <span class="about-icon">⚙️</span>
           <h4>Tecnología</h4>
-          <p>Red neuronal profunda Multi-Output con capas compartidas y dos cabezas especializadas, entrenada con <strong>TensorFlow / Keras</strong>.</p>
+          <p>Red neuronal profunda Multi-Output con capas compartidas, entrenada con <strong>TensorFlow / Keras</strong>.</p>
         </div>
         <div class="about-item">
           <span class="about-icon">📊</span>
           <h4>Datos</h4>
-          <p>Entrenada con más de <strong>200,000 perfiles</strong> que incluyen hábitos de juego, salud física, interacción social y salud mental.</p>
+          <p>Entrenada con más de <strong>200,000 perfiles</strong> de hábitos de juego, salud y vida social.</p>
         </div>
         <div class="about-item">
           <span class="about-icon">💡</span>
           <h4>Impacto</h4>
-          <p>Herramienta preventiva para detectar hábitos de riesgo, apoyo en investigación y base para aplicaciones de <strong>bienestar digital</strong>.</p>
+          <p>Herramienta preventiva para detectar hábitos de riesgo y promover el <strong>bienestar digital</strong>.</p>
         </div>
       </div>
       <div class="about-areas">
@@ -381,11 +506,19 @@
   <!-- ═══════════════ FOOTER ═══════════════ -->
   <footer class="footer">
     <p>
-      🧠 IA Predictora de Riesgo de Adicción Gamer · 
+      🧠 IA Predictora de Riesgo de Adicción Gamer ·
       Red Neuronal Multi-Output · TensorFlow / Keras ·
       Proyecto de Inteligencia Artificial — La Salle 2026
     </p>
   </footer>
+
+  <!-- ═══════════════ BACK TO TOP ═══════════════ -->
+  <button class="back-to-top" id="backToTop" aria-label="Volver arriba">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- ═══════════════ TOAST CONTAINER ═══════════════ -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
