@@ -1143,29 +1143,187 @@ body {
 }
 
 /* ── Recomendaciones ───────────────────────────────────── */
-.recomendaciones {
+/* ── Alerta Crítica ─────────────────────────────────────── */
+.alerta-critica {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem 1.8rem;
+  border-radius: var(--radius);
+  background: rgba(214, 48, 49, 0.12);
+  border: 1px solid rgba(214, 48, 49, 0.35);
+  margin-bottom: 1.5rem;
+  animation: pulseAlerta 2.5s ease-in-out infinite;
+}
+
+.alerta-critica.hidden { display: none; }
+
+.alerta-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  animation: shake 0.5s ease-in-out;
+}
+
+.alerta-body h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #e74c3c;
+  margin-bottom: 0.3rem;
+}
+
+.alerta-body p {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+@keyframes pulseAlerta {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214, 48, 49, 0); }
+  50% { box-shadow: 0 0 20px 2px rgba(214, 48, 49, 0.12); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ── Resumen General Card ──────────────────────────────── */
+.resumen-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem 2.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.resumen-card.tipo-positivo { border-color: rgba(0, 184, 148, 0.3); }
+.resumen-card.tipo-moderado { border-color: rgba(253, 203, 110, 0.3); }
+.resumen-card.tipo-riesgo   { border-color: rgba(225, 112, 85, 0.3); }
+.resumen-card.tipo-critico  { border-color: rgba(214, 48, 49, 0.4); }
+
+.resumen-emoji {
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.resumen-card h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.resumen-card.tipo-positivo h3 { color: #00b894; }
+.resumen-card.tipo-moderado h3 { color: #fdcb6e; }
+.resumen-card.tipo-riesgo h3   { color: #e17055; }
+.resumen-card.tipo-critico h3  { color: #e74c3c; }
+
+.resumen-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── Secciones de Análisis ─────────────────────────────── */
+.seccion-analisis {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.8rem 2rem;
+  margin-bottom: 1.2rem;
+  animation: fadeInUp 0.5s ease both;
 }
 
-.recomendaciones h3 {
+.seccion-analisis.hidden { display: none; }
+
+.seccion-titulo {
   font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.2rem;
 }
 
-.recomendaciones ul {
+.seccion-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+}
+
+/* ── Observaciones Grid ────────────────────────────────── */
+.observaciones-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.obs-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-xs);
+  background: rgba(0, 0, 0, 0.12);
+  animation: fadeInUp 0.4s ease both;
+  transition: all 0.25s ease;
+}
+
+.obs-item:hover {
+  transform: translateX(4px);
+}
+
+.obs-item.sev-alta {
+  border-left: 3px solid #e74c3c;
+}
+
+.obs-item.sev-media {
+  border-left: 3px solid #fdcb6e;
+}
+
+.obs-item.sev-baja {
+  border-left: 3px solid #00b894;
+}
+
+.obs-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.obs-body {
+  flex: 1;
+}
+
+.obs-area {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.15rem;
+}
+
+.obs-texto {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Lista de Consejos ─────────────────────────────────── */
+.lista-consejos {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
 }
 
-.recomendaciones li {
+.lista-consejos li {
   display: flex;
   align-items: flex-start;
   gap: 0.7rem;
@@ -1179,14 +1337,93 @@ body {
   transition: all 0.25s ease;
 }
 
-.recomendaciones li:hover {
+.lista-consejos li:hover {
   background: rgba(108, 92, 231, 0.06);
   transform: translateX(4px);
 }
 
-.recomendaciones li .rec-icon {
+.lista-consejos li .rec-icon {
   flex-shrink: 0;
   font-size: 1.15rem;
+}
+
+/* ── Sección Recursos Profesionales ────────────────────── */
+.seccion-recursos {
+  border-color: rgba(214, 48, 49, 0.2);
+  background: rgba(214, 48, 49, 0.03);
+}
+
+.recursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.9rem;
+}
+
+.recurso-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius-xs);
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  animation: fadeInUp 0.4s ease both;
+  transition: all 0.3s ease;
+}
+
+.recurso-card:hover {
+  background: rgba(0, 0, 0, 0.22);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.recurso-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.recurso-body {
+  flex: 1;
+}
+
+.recurso-nombre {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.recurso-tipo {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  margin-bottom: 0.35rem;
+}
+
+.recurso-tipo.tipo-linea {
+  background: rgba(214, 48, 49, 0.15);
+  color: #e74c3c;
+}
+
+.recurso-tipo.tipo-terapia {
+  background: rgba(108, 92, 231, 0.15);
+  color: #a29bfe;
+}
+
+.recurso-tipo.tipo-recurso {
+  background: rgba(0, 184, 148, 0.15);
+  color: #00b894;
+}
+
+.recurso-detalle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -1418,6 +1655,7 @@ body {
 
   .results-grid { grid-template-columns: 1fr; }
   .card-grid { grid-template-columns: 1fr 1fr; }
+  .recursos-grid { grid-template-columns: 1fr; }
 
   .presets-buttons { flex-direction: column; align-items: center; }
   .preset-btn { width: 100%; max-width: 280px; flex-direction: row; gap: 0.8rem; padding: 0.8rem 1.2rem; }

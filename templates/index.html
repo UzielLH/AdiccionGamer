@@ -426,6 +426,22 @@
     <div id="resultados" class="resultados hidden">
       <h2 class="result-title">📊 Resultados del Análisis</h2>
 
+      <!-- Alerta crítica (se muestra solo si aplica) -->
+      <div id="alertaCritica" class="alerta-critica hidden">
+        <div class="alerta-icon">⚠️</div>
+        <div class="alerta-body">
+          <h4 id="alertaTitulo"></h4>
+          <p id="alertaMensaje"></p>
+        </div>
+      </div>
+
+      <!-- Resumen general -->
+      <div id="resumenGeneral" class="resumen-card">
+        <span class="resumen-emoji" id="resumenEmoji"></span>
+        <h3 id="resumenTitulo"></h3>
+        <p id="resumenMensaje"></p>
+      </div>
+
       <div class="results-grid">
         <!-- Tarjeta Adicción -->
         <div class="result-card result-addiction" id="cardAddiction">
@@ -459,10 +475,39 @@
         </div>
       </div>
 
-      <!-- Recomendaciones -->
-      <div class="recomendaciones" id="recomendaciones">
-        <h3>💡 Recomendaciones Personalizadas</h3>
-        <ul id="listaRecomendaciones"></ul>
+      <!-- Observaciones basadas en tus datos -->
+      <div id="seccionObservaciones" class="seccion-analisis hidden">
+        <h3 class="seccion-titulo">🔍 Observaciones de tu Perfil</h3>
+        <p class="seccion-desc">Análisis basado en los datos que proporcionaste.</p>
+        <div id="listaObservaciones" class="observaciones-grid"></div>
+      </div>
+
+      <!-- Consejos inmediatos -->
+      <div id="seccionInmediatos" class="seccion-analisis hidden">
+        <h3 class="seccion-titulo">⚡ Acciones Inmediatas</h3>
+        <p class="seccion-desc">Cosas que puedes hacer hoy para mejorar.</p>
+        <ul id="listaInmediatos" class="lista-consejos"></ul>
+      </div>
+
+      <!-- Consejos de hábitos -->
+      <div id="seccionHabitos" class="seccion-analisis hidden">
+        <h3 class="seccion-titulo">🔄 Hábitos a Desarrollar</h3>
+        <p class="seccion-desc">Cambios sostenibles para el largo plazo.</p>
+        <ul id="listaHabitos" class="lista-consejos"></ul>
+      </div>
+
+      <!-- Consejos de bienestar emocional -->
+      <div id="seccionBienestar" class="seccion-analisis hidden">
+        <h3 class="seccion-titulo">💚 Bienestar Emocional</h3>
+        <p class="seccion-desc">Cuida tu salud mental con estas prácticas.</p>
+        <ul id="listaBienestar" class="lista-consejos"></ul>
+      </div>
+
+      <!-- Recursos profesionales (solo en casos de riesgo) -->
+      <div id="seccionRecursos" class="seccion-analisis seccion-recursos hidden">
+        <h3 class="seccion-titulo">🏥 Recursos y Apoyo Profesional</h3>
+        <p class="seccion-desc">Si sientes que necesitas ayuda, no estás solo. Estos recursos pueden guiarte.</p>
+        <div id="listaRecursos" class="recursos-grid"></div>
       </div>
     </div>
   </main>

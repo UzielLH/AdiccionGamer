@@ -142,28 +142,378 @@ def clasificar_bienestar(score: float) -> dict:
         return {"nivel": "Preocupante", "emoji": "🔴", "color": "#d63031", "clase": "preocupante"}
 
 
-def generar_recomendaciones(addiction: float, happiness: float) -> list:
-    """Genera recomendaciones personalizadas."""
-    recs = []
-    if addiction > 7.5:
-        recs.append({
-            "icono": "🚨",
-            "texto": "Tu nivel de riesgo es crítico. Considera buscar apoyo profesional.",
-        })
-    if addiction > 5:
-        recs.append({"icono": "⏰", "texto": "Establece límites estrictos de tiempo de juego diario."})
-        recs.append({"icono": "🎯", "texto": "Busca actividades alternativas fuera de las pantallas."})
-        recs.append({"icono": "📵", "texto": "Evita jugar durante las horas nocturnas."})
-    if happiness < 5:
-        recs.append({"icono": "💪", "texto": "Aumenta tu actividad física semanal."})
-        recs.append({"icono": "👥", "texto": "Dedica más tiempo a interacción social presencial."})
-        recs.append({"icono": "😴", "texto": "Prioriza la calidad y cantidad de sueño."})
-        recs.append({"icono": "🧘", "texto": "Practica técnicas de relajación o mindfulness."})
+def generar_respuesta_completa(addiction: float, happiness: float, datos: dict) -> dict:
+    """
+    Genera una respuesta completa con análisis detallado, consejos categorizados,
+    observaciones basadas en los inputs, y recursos profesionales si aplica.
+    """
+
+    # ── 1. Resumen general ────────────────────────────────────────
     if addiction <= 3 and happiness >= 7:
-        recs.append({"icono": "✅", "texto": "¡Excelente! Tu perfil es saludable. Mantén tus hábitos."})
+        resumen = {
+            "titulo": "Perfil Saludable",
+            "emoji": "🌟",
+            "mensaje": "Tu relación con los videojuegos parece equilibrada y saludable. "
+                       "Tus indicadores de bienestar son positivos. ¡Sigue así!",
+            "tipo": "positivo",
+        }
     elif addiction <= 5 and happiness >= 5:
-        recs.append({"icono": "👍", "texto": "Buen equilibrio, pero mantente atento a cambios en tus hábitos."})
-    return recs
+        resumen = {
+            "titulo": "Perfil Moderado",
+            "emoji": "👍",
+            "mensaje": "Tu nivel de gaming está dentro de un rango aceptable, pero hay algunas áreas "
+                       "donde podrías mejorar. Revisa las observaciones y consejos abajo.",
+            "tipo": "moderado",
+        }
+    elif addiction <= 7.5:
+        resumen = {
+            "titulo": "Perfil de Riesgo",
+            "emoji": "⚠️",
+            "mensaje": "Se detectaron patrones que sugieren un riesgo elevado de adicción. "
+                       "Es importante que tomes acciones para equilibrar tu vida digital y personal.",
+            "tipo": "riesgo",
+        }
+    else:
+        resumen = {
+            "titulo": "Perfil Crítico — Atención Necesaria",
+            "emoji": "🚨",
+            "mensaje": "Los indicadores muestran un nivel crítico de riesgo de adicción. "
+                       "Se recomienda encarecidamente buscar apoyo profesional. "
+                       "Más abajo encontrarás recursos de ayuda.",
+            "tipo": "critico",
+        }
+
+    # ── 2. Observaciones basadas en los datos de entrada ──────────
+    observaciones = []
+
+    # Horas de juego
+    horas = datos.get("daily_gaming_hours", 3)
+    if horas >= 8:
+        observaciones.append({
+            "icono": "🎮", "area": "Tiempo de Juego",
+            "texto": f"Juegas {horas:.0f} horas diarias, muy por encima del promedio saludable (2-3h). "
+                     "Esto impacta directamente tu sueño, productividad y salud social.",
+            "severidad": "alta",
+        })
+    elif horas >= 5:
+        observaciones.append({
+            "icono": "🎮", "area": "Tiempo de Juego",
+            "texto": f"Tus {horas:.0f} horas diarias de juego son considerables. Considera reducirlas gradualmente.",
+            "severidad": "media",
+        })
+
+    # Sueño
+    sueno = datos.get("sleep_hours", 7)
+    if sueno < 5:
+        observaciones.append({
+            "icono": "😴", "area": "Sueño",
+            "texto": f"Solo duermes {sueno:.1f} horas. La privación crónica de sueño afecta la concentración, "
+                     "la salud mental y aumenta la irritabilidad. El mínimo recomendado son 7 horas.",
+            "severidad": "alta",
+        })
+    elif sueno < 6.5:
+        observaciones.append({
+            "icono": "😴", "area": "Sueño",
+            "texto": f"Con {sueno:.1f} horas de sueño, estás por debajo del rango saludable (7-9h). "
+                     "Intenta acostarte más temprano.",
+            "severidad": "media",
+        })
+
+    # Juego nocturno
+    noche = datos.get("night_gaming_ratio", 0.3)
+    if noche >= 0.7:
+        observaciones.append({
+            "icono": "🌙", "area": "Gaming Nocturno",
+            "texto": f"El {noche*100:.0f}% de tu juego es nocturno. Esto altera el ritmo circadiano "
+                     "y la calidad del sueño, generando un ciclo de fatiga y dependencia.",
+            "severidad": "alta",
+        })
+
+    # Ejercicio
+    ejercicio = datos.get("exercise_hours", 2)
+    if ejercicio < 1:
+        observaciones.append({
+            "icono": "💪", "area": "Actividad Física",
+            "texto": f"Solo realizas {ejercicio:.1f}h de ejercicio semanal. La OMS recomienda al menos 2.5h. "
+                     "El sedentarismo aumenta riesgos de salud física y mental.",
+            "severidad": "alta",
+        })
+    elif ejercicio < 2:
+        observaciones.append({
+            "icono": "💪", "area": "Actividad Física",
+            "texto": "Tu nivel de ejercicio está algo bajo. Intenta incorporar más actividad en tu rutina.",
+            "severidad": "media",
+        })
+
+    # Social
+    social = datos.get("social_interaction_score", 5)
+    loneliness = datos.get("loneliness_score", 4)
+    if social <= 3 or loneliness >= 7:
+        observaciones.append({
+            "icono": "👥", "area": "Vida Social",
+            "texto": "Tu interacción social presencial es muy baja y tu nivel de soledad es alto. "
+                     "El aislamiento social es un factor de riesgo importante para la depresión.",
+            "severidad": "alta",
+        })
+    elif social <= 5 and loneliness >= 5:
+        observaciones.append({
+            "icono": "👥", "area": "Vida Social",
+            "texto": "Podrías beneficiarte de más tiempo con amigos y familia fuera del mundo digital.",
+            "severidad": "media",
+        })
+
+    # Estrés / Ansiedad / Depresión
+    estres = datos.get("stress_level", 5)
+    ansiedad = datos.get("anxiety_score", 4)
+    depresion = datos.get("depression_score", 3)
+
+    if depresion >= 7:
+        observaciones.append({
+            "icono": "🧠", "area": "Salud Mental",
+            "texto": f"Tu puntuación de depresión ({depresion:.1f}/10) es preocupante. "
+                     "Esto puede estar relacionado o agravado por hábitos de gaming excesivo. "
+                     "Considera hablar con un profesional de salud mental.",
+            "severidad": "alta",
+        })
+    elif depresion >= 5:
+        observaciones.append({
+            "icono": "🧠", "area": "Salud Mental",
+            "texto": f"Tu nivel de depresión ({depresion:.1f}/10) merece atención. "
+                     "Practicar actividades fuera del gaming puede ayudar.",
+            "severidad": "media",
+        })
+
+    if ansiedad >= 7:
+        observaciones.append({
+            "icono": "😰", "area": "Ansiedad",
+            "texto": f"Tu ansiedad es alta ({ansiedad:.1f}/10). Técnicas de respiración, meditación "
+                     "y ejercicio regular pueden ayudar a reducirla.",
+            "severidad": "alta",
+        })
+
+    if estres >= 7:
+        observaciones.append({
+            "icono": "🔥", "area": "Estrés",
+            "texto": f"Tu nivel de estrés ({estres:.1f}/10) es elevado. Identifica las fuentes principales "
+                     "de estrés y busca formas de gestionarlas.",
+            "severidad": "media",
+        })
+
+    # Gasto
+    gasto = datos.get("microtransactions_spending", 300)
+    if gasto >= 1000:
+        observaciones.append({
+            "icono": "💸", "area": "Gasto en Gaming",
+            "texto": f"Gastas ${gasto:.0f} en microtransacciones, lo cual es un gasto significativo. "
+                     "Establece un presupuesto mensual fijo y revísalo.",
+            "severidad": "alta",
+        })
+    elif gasto >= 500:
+        observaciones.append({
+            "icono": "💸", "area": "Gasto en Gaming",
+            "texto": f"Con ${gasto:.0f} en microtransacciones, controla que no afecte tu economía personal.",
+            "severidad": "media",
+        })
+
+    # Cafeína
+    cafeina = datos.get("caffeine_intake", 2)
+    if cafeina >= 5:
+        observaciones.append({
+            "icono": "☕", "area": "Cafeína",
+            "texto": f"Consumes {cafeina:.0f} bebidas con cafeína al día. Esto puede alterar tu sueño "
+                     "y aumentar la ansiedad. Intenta reducir gradualmente.",
+            "severidad": "media",
+        })
+
+    # Dolor de espalda / Fatiga visual
+    espalda = datos.get("back_pain_score", 4)
+    ojos = datos.get("eye_strain_score", 5)
+    if espalda >= 7 or ojos >= 7:
+        observaciones.append({
+            "icono": "🩺", "area": "Salud Física",
+            "texto": "Presentas molestias físicas importantes (espalda y/o ojos). "
+                     "Toma descansos cada 45 min, ajusta tu postura y la iluminación.",
+            "severidad": "media",
+        })
+
+    # ── 3. Consejos categorizados ─────────────────────────────────
+    consejos_inmediatos = []
+    consejos_habitos = []
+    consejos_bienestar = []
+
+    # Inmediatos (cosas que se pueden hacer hoy)
+    if horas >= 5:
+        consejos_inmediatos.append({
+            "icono": "⏱️",
+            "texto": "Configura una alarma para limitar tus sesiones de juego a máximo 2 horas seguidas.",
+        })
+    if noche >= 0.5:
+        consejos_inmediatos.append({
+            "icono": "🌅",
+            "texto": "Establece una hora límite (ej: 10 PM) para dejar de jugar y prepararte para dormir.",
+        })
+    if sueno < 7:
+        consejos_inmediatos.append({
+            "icono": "📱",
+            "texto": "Activa el modo «No molestar» en tus dispositivos 1 hora antes de dormir.",
+        })
+    if ejercicio < 2:
+        consejos_inmediatos.append({
+            "icono": "🚶",
+            "texto": "Sal a caminar 20 minutos hoy. Pequeños pasos generan grandes cambios.",
+        })
+    if cafeina >= 4:
+        consejos_inmediatos.append({
+            "icono": "🍵",
+            "texto": "Sustituye una de tus bebidas con cafeína por agua o té sin cafeína.",
+        })
+
+    # Hábitos a largo plazo
+    if addiction > 5:
+        consejos_habitos.append({
+            "icono": "📋",
+            "texto": "Lleva un diario de tiempo de juego semanal y fija metas de reducción graduales (10% por semana).",
+        })
+        consejos_habitos.append({
+            "icono": "🎨",
+            "texto": "Busca un hobby alternativo que disfrutes (deporte, arte, música, lectura) para reemplazar horas de gaming.",
+        })
+    if social <= 5:
+        consejos_habitos.append({
+            "icono": "📅",
+            "texto": "Agenda al menos 2 actividades sociales presenciales por semana (comidas, paseos, deporte).",
+        })
+    if estres >= 5 or ansiedad >= 5:
+        consejos_habitos.append({
+            "icono": "🧘",
+            "texto": "Incorpora 10 minutos diarios de meditación o respiración consciente. Apps como Calm o Headspace pueden ayudar.",
+        })
+    if ejercicio < 2.5:
+        consejos_habitos.append({
+            "icono": "🏃",
+            "texto": "Haz ejercicio moderado al menos 150 minutos por semana (caminar, nadar, bicicleta).",
+        })
+    consejos_habitos.append({
+        "icono": "🍎",
+        "texto": "Mantén una alimentación balanceada y horarios regulares de comida — tu cerebro lo agradecerá.",
+    })
+    if horas >= 5:
+        consejos_habitos.append({
+            "icono": "📵",
+            "texto": "Designa «días sin gaming» (1-2 por semana) para reconectar con otras actividades.",
+        })
+
+    # Bienestar emocional
+    if happiness < 5:
+        consejos_bienestar.append({
+            "icono": "📝",
+            "texto": "Escribe cada noche 3 cosas positivas que te pasaron en el día. Esto entrena la mente hacia lo positivo.",
+        })
+        consejos_bienestar.append({
+            "icono": "🌿",
+            "texto": "Pasa tiempo en la naturaleza. Estudios muestran que 20 minutos al aire libre reducen el cortisol.",
+        })
+    if depresion >= 5 or ansiedad >= 5:
+        consejos_bienestar.append({
+            "icono": "🗣️",
+            "texto": "Habla de cómo te sientes con alguien de confianza. Expresar emociones es el primer paso para gestionarlas.",
+        })
+    if loneliness >= 6:
+        consejos_bienestar.append({
+            "icono": "🤝",
+            "texto": "Busca comunidades o grupos de interés en tu localidad. Pertenecer a un grupo reduce la soledad.",
+        })
+    consejos_bienestar.append({
+        "icono": "💤",
+        "texto": "Respeta tu ciclo de sueño. Dormir 7-9 horas es la base del bienestar emocional.",
+    })
+
+    # Si perfil saludable, dar refuerzo positivo
+    if addiction <= 3 and happiness >= 7:
+        consejos_inmediatos = [
+            {"icono": "✅", "texto": "¡Tus hábitos actuales son excelentes! Mantén tu rutina de sueño y ejercicio."},
+            {"icono": "🎉", "texto": "Tienes un gran equilibrio entre gaming y vida personal. Comparte tu experiencia con otros."},
+        ]
+        consejos_habitos = [
+            {"icono": "📈", "texto": "Sigue monitoreando tus hábitos de forma periódica para mantener el equilibrio."},
+        ]
+        consejos_bienestar = [
+            {"icono": "🌟", "texto": "Tu bienestar mental es positivo. Valora y cuida lo que tienes."},
+        ]
+
+    # ── 4. Recursos profesionales (solo si riesgo alto/crítico) ───
+    recursos = []
+    if addiction >= 6 or happiness < 3 or depresion >= 7 or ansiedad >= 7:
+        recursos = [
+            {
+                "tipo": "linea",
+                "nombre": "Línea de la Vida (México)",
+                "detalle": "800 911 2000 — Atención gratuita 24/7 en crisis emocionales",
+                "icono": "📞",
+            },
+            {
+                "tipo": "linea",
+                "nombre": "SAPTEL (México)",
+                "detalle": "55 5259 8121 — Servicio de apoyo psicológico por teléfono",
+                "icono": "📞",
+            },
+            {
+                "tipo": "terapia",
+                "nombre": "Terapia Cognitivo-Conductual (TCC)",
+                "detalle": "Especialmente eficaz para adicciones conductuales y gaming. "
+                           "Ayuda a identificar patrones de pensamiento y cambiar comportamientos.",
+                "icono": "🧠",
+            },
+            {
+                "tipo": "terapia",
+                "nombre": "Terapia Familiar",
+                "detalle": "Recomendada cuando el gaming afecta las relaciones familiares. "
+                           "Involucrar a la familia mejora significativamente los resultados.",
+                "icono": "👨‍👩‍👦",
+            },
+            {
+                "tipo": "recurso",
+                "nombre": "IMJUVE — Instituto Mexicano de la Juventud",
+                "detalle": "Ofrece programas de orientación y apoyo para jóvenes. gob.mx/imjuve",
+                "icono": "🏛️",
+            },
+            {
+                "tipo": "recurso",
+                "nombre": "Grupos de apoyo en línea",
+                "detalle": "Comunidades como r/StopGaming y Game Quitters ofrecen apoyo entre pares "
+                           "y programas estructurados de reducción.",
+                "icono": "🌐",
+            },
+            {
+                "tipo": "recurso",
+                "nombre": "Centros de Integración Juvenil (CIJ)",
+                "detalle": "Más de 120 centros en México con tratamiento ambulatorio especializado "
+                           "en adicciones. cij.gob.mx",
+                "icono": "🏥",
+            },
+        ]
+
+    # ── 5. Alerta especial si es caso crítico ────────────────────
+    alerta = None
+    if addiction >= 7.5 or depresion >= 8:
+        alerta = {
+            "titulo": "⚠️ Se recomienda atención profesional",
+            "mensaje": "Los resultados indican un nivel que puede requerir intervención profesional. "
+                       "No dudes en contactar a un especialista en salud mental. "
+                       "Pedir ayuda es un acto de valentía, no de debilidad.",
+        }
+
+    return {
+        "resumen": resumen,
+        "observaciones": observaciones,
+        "consejos": {
+            "inmediatos": consejos_inmediatos,
+            "habitos": consejos_habitos,
+            "bienestar": consejos_bienestar,
+        },
+        "recursos": recursos,
+        "alerta": alerta,
+    }
 
 
 # ── Rutas ─────────────────────────────────────────────────────────
@@ -315,7 +665,7 @@ def predecir():
 
         riesgo = clasificar_riesgo(addiction_score)
         bienestar = clasificar_bienestar(happiness_score)
-        recomendaciones = generar_recomendaciones(addiction_score, happiness_score)
+        analisis = generar_respuesta_completa(addiction_score, happiness_score, datos_completos)
 
         return jsonify({
             "ok": True,
@@ -323,7 +673,7 @@ def predecir():
             "happiness_score": round(happiness_score, 2),
             "riesgo": riesgo,
             "bienestar": bienestar,
-            "recomendaciones": recomendaciones,
+            "analisis": analisis,
             "scaler_usado": scaler is not None,
         })
 

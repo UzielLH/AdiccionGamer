@@ -425,6 +425,7 @@ function mostrarResultados(data) {
 
   const addScore = data.addiction_score;
   const hapScore = data.happiness_score;
+  const analisis = data.analisis || {};
 
   animarNumero("addictionScore", addScore, "/10");
   animarNumero("happinessScore", hapScore, "/10");
@@ -470,15 +471,94 @@ function mostrarResultados(data) {
   dibujarGauge("gaugeAddiction", addScore, true);
   dibujarGauge("gaugeHappiness", hapScore, false);
 
-  // Recomendaciones
-  const lista = document.getElementById("listaRecomendaciones");
+  // ── Alerta crítica ──
+  const alertaEl = document.getElementById("alertaCritica");
+  if (analisis.alerta) {
+    document.getElementById("alertaTitulo").textContent = analisis.alerta.titulo;
+    document.getElementById("alertaMensaje").textContent = analisis.alerta.mensaje;
+    alertaEl.classList.remove("hidden");
+  } else {
+    alertaEl.classList.add("hidden");
+  }
+
+  // ── Resumen general ──
+  if (analisis.resumen) {
+    const resumenCard = document.getElementById("resumenGeneral");
+    document.getElementById("resumenEmoji").textContent = analisis.resumen.emoji;
+    document.getElementById("resumenTitulo").textContent = analisis.resumen.titulo;
+    document.getElementById("resumenMensaje").textContent = analisis.resumen.mensaje;
+    resumenCard.className = "resumen-card tipo-" + analisis.resumen.tipo;
+  }
+
+  // ── Observaciones ──
+  const obsContainer = document.getElementById("listaObservaciones");
+  const obsSection = document.getElementById("seccionObservaciones");
+  obsContainer.innerHTML = "";
+  if (analisis.observaciones && analisis.observaciones.length > 0) {
+    analisis.observaciones.forEach((obs, i) => {
+      const div = document.createElement("div");
+      div.className = "obs-item sev-" + obs.severidad;
+      div.style.animationDelay = i * 0.1 + "s";
+      div.innerHTML = `
+        <span class="obs-icon">${obs.icono}</span>
+        <div class="obs-body">
+          <div class="obs-area">${obs.area}</div>
+          <div class="obs-texto">${obs.texto}</div>
+        </div>`;
+      obsContainer.appendChild(div);
+    });
+    obsSection.classList.remove("hidden");
+  } else {
+    obsSection.classList.add("hidden");
+  }
+
+  // ── Consejos categorizados ──
+  renderConsejos("seccionInmediatos", "listaInmediatos", analisis.consejos?.inmediatos);
+  renderConsejos("seccionHabitos", "listaHabitos", analisis.consejos?.habitos);
+  renderConsejos("seccionBienestar", "listaBienestar", analisis.consejos?.bienestar);
+
+  // ── Recursos profesionales ──
+  const recursosContainer = document.getElementById("listaRecursos");
+  const recursosSection = document.getElementById("seccionRecursos");
+  recursosContainer.innerHTML = "";
+  if (analisis.recursos && analisis.recursos.length > 0) {
+    analisis.recursos.forEach((rec, i) => {
+      const div = document.createElement("div");
+      div.className = "recurso-card";
+      div.style.animationDelay = i * 0.08 + "s";
+
+      const tipoLabels = { linea: "Línea de ayuda", terapia: "Terapia", recurso: "Recurso" };
+      div.innerHTML = `
+        <span class="recurso-icon">${rec.icono}</span>
+        <div class="recurso-body">
+          <span class="recurso-tipo tipo-${rec.tipo}">${tipoLabels[rec.tipo] || rec.tipo}</span>
+          <div class="recurso-nombre">${rec.nombre}</div>
+          <div class="recurso-detalle">${rec.detalle}</div>
+        </div>`;
+      recursosContainer.appendChild(div);
+    });
+    recursosSection.classList.remove("hidden");
+  } else {
+    recursosSection.classList.add("hidden");
+  }
+}
+
+// ── Helper: Render lista de consejos en una sección ──────
+function renderConsejos(sectionId, listaId, items) {
+  const section = document.getElementById(sectionId);
+  const lista = document.getElementById(listaId);
   lista.innerHTML = "";
-  data.recomendaciones.forEach((rec, i) => {
-    const li = document.createElement("li");
-    li.style.animationDelay = i * 0.1 + "s";
-    li.innerHTML = `<span class="rec-icon">${rec.icono}</span><span>${rec.texto}</span>`;
-    lista.appendChild(li);
-  });
+  if (items && items.length > 0) {
+    items.forEach((item, i) => {
+      const li = document.createElement("li");
+      li.style.animationDelay = i * 0.1 + "s";
+      li.innerHTML = `<span class="rec-icon">${item.icono}</span><span>${item.texto}</span>`;
+      lista.appendChild(li);
+    });
+    section.classList.remove("hidden");
+  } else {
+    section.classList.add("hidden");
+  }
 }
 
 // ══════════════════════════════════════════════════════════
